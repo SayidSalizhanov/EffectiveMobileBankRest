@@ -6,6 +6,9 @@ import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.RoleNameEnum;
+import com.example.bankcards.exception.custom.RoleNotFoundException;
+import com.example.bankcards.exception.custom.UserAlreadyExistsException;
+import com.example.bankcards.exception.custom.UserNotFoundException;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -43,20 +46,20 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse getById(UUID userId) {
         User user = userRepository.findByIdWithRoles(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         return userMapper.toResponse(user);
     }
     
     @Override
     public UUID create(UserCreateRequest request) {
         if (userRepository.existsByLogin(request.login())) {
-            throw new RuntimeException("User with login " + request.login() + " already exists");
+            throw new UserAlreadyExistsException("User with login " + request.login() + " already exists");
         }
         
         User user = userMapper.toEntity(request);
 
         Role userRole = roleRepository.findByName(RoleNameEnum.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Default role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Default role not found"));
         user.addRole(userRole);
         
         User savedUser = userRepository.save(user);
@@ -66,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(UUID userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         
         userMapper.updateEntity(user, request);
         userRepository.save(user);
@@ -75,7 +78,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(UUID userId) {
         if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found with id: " + userId);
+            throw new UserNotFoundException("User not found with id: " + userId);
         }
         userRepository.deleteById(userId);
     }

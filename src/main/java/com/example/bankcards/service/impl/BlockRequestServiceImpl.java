@@ -3,6 +3,7 @@ package com.example.bankcards.service.impl;
 import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.entity.BlockRequest;
 import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.exception.custom.BlockRequestNotFoundException;
 import com.example.bankcards.mapper.BlockRequestMapper;
 import com.example.bankcards.repository.BlockRequestRepository;
 import com.example.bankcards.service.BlockRequestService;
@@ -66,6 +67,6 @@ public class BlockRequestServiceImpl implements BlockRequestService {
 
     private BlockRequest requireById(UUID requestId) {
         return blockRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Block request not found with id: " + requestId));
+                .orElseThrow(() -> new BlockRequestNotFoundException("Block request not found with id: " + requestId));
     }
 } 

@@ -8,6 +8,8 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.BlockRequestStatus;
 import com.example.bankcards.enums.CardStatusEnum;
+import com.example.bankcards.exception.custom.CardNotFoundException;
+import com.example.bankcards.exception.custom.UserNotFoundException;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.BlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
@@ -22,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +56,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public void create(CardCreateRequest request) {
         User owner = userRepository.findById(request.ownerId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + request.ownerId()));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + request.ownerId()));
         
         Card card = cardMapper.toEntity(request, owner);
         cardRepository.save(card);
@@ -85,7 +86,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public void delete(String number) {
         if (!cardRepository.existsByNumber(number)) {
-            throw new RuntimeException("Card not found with number: " + number);
+            throw new CardNotFoundException("Card not found with number: " + number);
         }
         cardRepository.deleteById(number);
     }
@@ -123,6 +124,6 @@ public class CardServiceImpl implements CardService {
 
     private Card requireByNumber(String number) {
         return cardRepository.findByNumber(number)
-                .orElseThrow(() -> new RuntimeException("Card not found with number: " + number));
+                .orElseThrow(() -> new CardNotFoundException("Card not found with number: " + number));
     }
 } 
