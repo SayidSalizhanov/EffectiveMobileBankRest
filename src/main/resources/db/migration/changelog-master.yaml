@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/V1__create_initial_schema.sql
+      relativeToChangelogFile: false
+#  - include:
+#      file: db/migration/V2__insert_test_data.sql
+#      relativeToChangelogFile: false
