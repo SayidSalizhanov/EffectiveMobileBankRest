@@ -41,7 +41,7 @@ public class BlockRequestServiceImpl implements BlockRequestService {
     public List<BlockRequestResponse> getByStatus(String status, Integer page, Integer size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         BlockRequestStatus requestStatus = BlockRequestStatus.valueOf(status.toUpperCase());
-        Page<BlockRequest> blockRequests = blockRequestRepository.findByStatus(requestStatus, pageRequest);
+        Page<BlockRequest> blockRequests = blockRequestRepository.findByStatusWithRequester(requestStatus, pageRequest);
         return blockRequests.getContent().stream()
                 .map(blockRequestMapper::toResponse)
                 .collect(Collectors.toList());

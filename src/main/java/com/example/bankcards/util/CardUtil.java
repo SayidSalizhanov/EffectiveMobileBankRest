@@ -16,12 +16,4 @@ public class CardUtil {
     public static boolean isExpired(YearMonth expirationDate) {
         return expirationDate.isBefore(YearMonth.now());
     }
-
-    public static YearMonth getCurrentYearMonth() {
-        return YearMonth.now();
-    }
-
-    public static boolean isValidExpirationDate(YearMonth yearMonth) {
-        return yearMonth != null && !yearMonth.isBefore(YearMonth.now());
-    }
 }

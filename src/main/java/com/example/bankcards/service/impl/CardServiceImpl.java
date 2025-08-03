@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -115,7 +116,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void updateExpiredCards() {
-        List<Card> expiredCards = cardRepository.findExpiredCards(CardUtil.getCurrentYearMonth());
+        List<Card> expiredCards = cardRepository.findExpiredCards(YearMonth.now());
         expiredCards.forEach(card -> {
             card.setStatus(CardStatusEnum.EXPIRED);
             cardRepository.save(card);

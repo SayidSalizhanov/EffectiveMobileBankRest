@@ -9,15 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface BlockRequestRepository extends JpaRepository<BlockRequest, UUID> {
     
-    @Query("SELECT br FROM BlockRequest br LEFT JOIN FETCH br.requester ORDER BY br.requestDate DESC")
+    @Query("SELECT br FROM BlockRequest br JOIN FETCH br.requester ORDER BY br.requestDate DESC")
     Page<BlockRequest> findAllWithRequester(Pageable pageable);
     
-    @Query("SELECT br FROM BlockRequest br LEFT JOIN FETCH br.requester WHERE br.status = :status ORDER BY br.requestDate DESC")
-    Page<BlockRequest> findByStatus(@Param("status") BlockRequestStatus status, Pageable pageable);
+    @Query("SELECT br FROM BlockRequest br JOIN FETCH br.requester WHERE br.status = :status ORDER BY br.requestDate DESC")
+    Page<BlockRequest> findByStatusWithRequester(@Param("status") BlockRequestStatus status, Pageable pageable);
 }

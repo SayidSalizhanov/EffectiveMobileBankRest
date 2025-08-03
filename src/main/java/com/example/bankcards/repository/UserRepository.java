@@ -13,14 +13,5 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    
-    Optional<User> findByLogin(String login);
-    
     boolean existsByLogin(String login);
-    
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles LEFT JOIN FETCH u.cards LEFT JOIN FETCH u.blockRequests")
-    Page<User> findAllWithRoles(Pageable pageable);
-    
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles LEFT JOIN FETCH u.cards LEFT JOIN FETCH u.blockRequests WHERE u.userId = :userId")
-    Optional<User> findByIdWithRoles(@Param("userId") UUID userId);
 } 

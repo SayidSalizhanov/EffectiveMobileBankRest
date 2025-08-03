@@ -19,17 +19,8 @@ public interface CardRepository extends JpaRepository<Card, String> {
     
     Optional<Card> findByNumber(String number);
     
-    @Query("SELECT c FROM Card c LEFT JOIN FETCH c.owner WHERE c.owner.userId = :userId")
-    Page<Card> findByUserId(@Param("userId") UUID userId, Pageable pageable);
-    
-    @Query("SELECT c FROM Card c LEFT JOIN FETCH c.owner WHERE c.owner.userId = :userId AND c.status = :status")
-    Page<Card> findByUserIdAndStatus(@Param("userId") UUID userId, @Param("status") CardStatusEnum status, Pageable pageable);
-    
     @Query("SELECT c FROM Card c LEFT JOIN FETCH c.owner WHERE c.expirationDate < :yearMonth")
     List<Card> findExpiredCards(@Param("yearMonth") YearMonth yearMonth);
-    
-    @Query("SELECT c FROM Card c LEFT JOIN FETCH c.owner WHERE c.owner.userId = :userId AND c.number IN (:cardNumbers)")
-    List<Card> findByUserIdAndNumbersIn(@Param("userId") UUID userId, @Param("cardNumbers") List<String> cardNumbers);
-    
+
     boolean existsByNumber(String number);
 } 

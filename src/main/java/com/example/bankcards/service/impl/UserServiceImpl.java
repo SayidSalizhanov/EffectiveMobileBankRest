@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAll(Integer page, Integer size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<User> users = userRepository.findAllWithRoles(pageRequest);
+        Page<User> users = userRepository.findAll(pageRequest);
         return users.getContent().stream()
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getById(UUID userId) {
-        User user = userRepository.findByIdWithRoles(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         return userMapper.toResponse(user);
     }
