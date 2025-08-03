@@ -24,44 +24,33 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getUsers(
-            @RequestParam(required = false, defaultValue = OFFSET_DEFAULT_VALUE)
-            Integer page,
-            @RequestParam(required = false, defaultValue = LIMIT_DEFAULT_VALUE)
-            Integer size
+            @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
+            @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
     ) {
         return userService.getAll(page, size);
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse getUserById(
-            @PathVariable("userId") UUID userId
-    ) {
+    public UserResponse getUserById(@PathVariable("userId") UUID userId) {
         return userService.getById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UUID create(
-            @RequestBody UserCreateRequest request
-    ) {
+    public UUID create(@RequestBody UserCreateRequest request) {
         return userService.create(request);
     }
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(
-            @PathVariable("userId") UUID userId,
-            @RequestBody UserUpdateRequest request
-    ) {
+    public void update(@PathVariable("userId") UUID userId, @RequestBody UserUpdateRequest request) {
         userService.update(userId, request);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-            @PathVariable("userId") UUID userId
-    ) {
+    public void delete(@PathVariable("userId") UUID userId) {
         userService.delete(userId);
     }
 }

@@ -15,9 +15,7 @@ public class TransferController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void transfer(
-            @RequestBody TransferRequest request
-    ) {
+    public void transfer(@RequestBody TransferRequest request) {
         transferService.transfer(request);
     }
 }
