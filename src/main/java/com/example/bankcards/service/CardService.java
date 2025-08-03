@@ -15,4 +15,5 @@ public interface CardService {
     void delete(String number);
     void blockRequest(String number);
     BalanceResponse getBalance(String number);
+    void updateExpiredCards();
 }

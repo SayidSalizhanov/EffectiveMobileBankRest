@@ -31,6 +31,14 @@ public class User {
     @ToString.Exclude
     private List<Card> cards = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "requester",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @ToString.Exclude
+    private List<BlockRequest> blockRequests = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_roles",
@@ -48,5 +56,15 @@ public class User {
     public void removeRole(Role role) {
         this.roles.remove(role);
         role.getUsers().remove(this);
+    }
+
+    public void addBlockRequest(BlockRequest blockRequest) {
+        this.blockRequests.add(blockRequest);
+        blockRequest.setRequester(this);
+    }
+
+    public void removeBlockRequest(BlockRequest blockRequest) {
+        this.blockRequests.remove(blockRequest);
+        blockRequest.setRequester(null);
     }
 }

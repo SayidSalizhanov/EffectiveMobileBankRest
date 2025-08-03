@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Entity
 @Table(name = "cards")
@@ -22,7 +22,7 @@ public class Card {
     private String number;
 
     @Column(name = "expiration_date", nullable = false)
-    private LocalDate expirationDate;
+    private YearMonth expirationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

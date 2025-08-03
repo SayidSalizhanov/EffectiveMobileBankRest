@@ -1,12 +1,15 @@
 package com.example.bankcards.dto.response;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.UUID;
 
+@Builder
 public record CardResponse(
         String number,
-        LocalDate expirationDate,
+        YearMonth expirationDate,
         String status,
         BigDecimal balance,
         UUID ownerId
