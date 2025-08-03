@@ -2,13 +2,16 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.request.CardCreateRequest;
 import com.example.bankcards.dto.response.BalanceResponse;
+import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.service.BlockRequestService;
 import com.example.bankcards.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.bankcards.util.ValidationValues.Page.*;
 
@@ -18,6 +21,7 @@ import static com.example.bankcards.util.ValidationValues.Page.*;
 public class CardController {
 
     private final CardService cardService;
+    private final BlockRequestService blockRequestService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -58,15 +62,46 @@ public class CardController {
         cardService.delete(number);
     }
 
-    @PostMapping("/{number}/block/request")
+    @GetMapping("/{number}/balance")
+    @ResponseStatus(HttpStatus.OK)
+    public BalanceResponse getCardBalance(@PathVariable("number") String number) {
+        return cardService.getBalance(number);
+    }
+
+    // block-requests
+
+    @PostMapping("/{number}/block-request")
     @ResponseStatus(HttpStatus.OK)
     public void blockCardRequest(@PathVariable("number") String number) {
         cardService.blockRequest(number);
     }
 
-    @GetMapping("/{number}/balance")
+    @GetMapping("/block-requests")
     @ResponseStatus(HttpStatus.OK)
-    public BalanceResponse getCardBalance(@PathVariable("number") String number) {
-        return cardService.getBalance(number);
+    public List<BlockRequestResponse> getAllBlockRequests(
+            @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
+            @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size) {
+        return blockRequestService.getAll(page, size);
+    }
+
+    @GetMapping("/block-requests/status/{status}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BlockRequestResponse> getBlockRequestsByStatus(
+            @PathVariable String status,
+            @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
+            @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size) {
+        return blockRequestService.getByStatus(status, page, size);
+    }
+
+    @PostMapping("/block-requests/{requestId}/approve")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void approveBlockRequest(@PathVariable UUID requestId) {
+        blockRequestService.approve(requestId);
+    }
+
+    @PostMapping("/block-requests/{requestId}/reject")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void rejectBlockRequest(@PathVariable UUID requestId) {
+        blockRequestService.reject(requestId);
     }
 }
