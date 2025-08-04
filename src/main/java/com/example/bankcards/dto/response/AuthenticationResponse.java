@@ -1,12 +1,12 @@
 package com.example.bankcards.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
-public class AuthenticationResponse {
-    private String token;
+@Schema(description = "Ответ с JWT токеном аутентификации")
+public record AuthenticationResponse(
+        @Schema(description = "JWT токен доступа", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        String token
+){
 }
