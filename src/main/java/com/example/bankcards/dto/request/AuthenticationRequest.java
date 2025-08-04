@@ -1,13 +1,15 @@
 package com.example.bankcards.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-@Builder
-public class AuthenticationRequest {
-    private String login;
-    private String password;
+public record AuthenticationRequest(
+        @NotBlank(message = "Login is required")
+        @Size(min = 3, max = 50, message = "Login must be between 3 and 50 characters")
+        String login,
+
+        @NotBlank(message = "Password is required")
+        @Size(min = 6, max = 255, message = "Password must be between 6 and 255 characters")
+        String password
+) {
 }
