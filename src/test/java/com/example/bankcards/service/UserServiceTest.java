@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
@@ -41,6 +42,9 @@ class UserServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -177,17 +181,22 @@ class UserServiceTest {
     @Test
     void update_ShouldUpdateUser_WhenUserExists() {
         // given
-        UserUpdateRequest request = new UserUpdateRequest("oldPassword", "newPassword");
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+        String encodedOldPassword = "encodedOldPassword";
+
+        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        user.setPasswordHash(encodedOldPassword);
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        doNothing().when(userMapper).updateEntity(user, request);
-        when(userRepository.save(user)).thenReturn(user);
+        when(passwordEncoder.encode(oldPassword)).thenReturn(encodedOldPassword);
+        when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         // when
         userService.update(userId, request);
 
         // then
         verify(userRepository).findById(userId);
-        verify(userMapper).updateEntity(user, request);
         verify(userRepository).save(user);
     }
 
@@ -202,8 +211,54 @@ class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found with id: " + userId);
         verify(userRepository).findById(userId);
-        verify(userMapper, never()).updateEntity(any(), any());
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void update_ShouldUpdatePassword_WhenOldPasswordIsCorrect() {
+        // given
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+        String encodedOldPassword = "encodedOldPassword";
+        String encodedNewPassword = "encodedNewPassword";
+
+        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        user.setPasswordHash(encodedOldPassword);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(oldPassword)).thenReturn(encodedOldPassword);
+        when(passwordEncoder.encode(newPassword)).thenReturn(encodedNewPassword);
+
+        // when
+        userService.update(userId, request);
+
+        // then
+        assertThat(user.getPasswordHash()).isEqualTo(encodedNewPassword);
+        verify(userRepository).findById(userId);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void update_ShouldNotUpdatePassword_WhenOldPasswordIsInvalid() {
+        // given
+        String oldPassword = "wrongPassword";
+        String newPassword = "newPassword";
+        String encodedOldPassword = "encodedOldPassword";
+        String encodedWrongPassword = "encodedWrongPassword";
+
+        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        user.setPasswordHash(encodedOldPassword);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(oldPassword)).thenReturn(encodedWrongPassword);
+
+        // when
+        userService.update(userId, request);
+
+        // then
+        assertThat(user.getPasswordHash()).isEqualTo(encodedOldPassword); // Пароль не изменился
+        verify(userRepository).findById(userId);
+        verify(userRepository).save(user);
     }
 
     @Test

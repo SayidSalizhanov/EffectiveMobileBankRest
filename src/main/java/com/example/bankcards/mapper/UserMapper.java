@@ -5,13 +5,18 @@ import com.example.bankcards.dto.request.UserUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.util.CardUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
-    
+
+    private final PasswordEncoder passwordEncoder;
+
     public UserResponse toResponse(User user) {
         return UserResponse.builder()
                 .login(user.getLogin())
@@ -30,13 +35,9 @@ public class UserMapper {
     public User toEntity(UserCreateRequest request) {
         return User.builder()
                 .login(request.login())
-                .passwordHash(request.password()) // todo хеширование
+                .passwordHash(passwordEncoder.encode(
+                        request.password()
+                ))
                 .build();
-    }
-    
-    public void updateEntity(User user, UserUpdateRequest request) {
-        if (request.newPassword() != null && request.oldPassword().equals(user.getPasswordHash())) { // todo хеширование
-            user.setPasswordHash(request.newPassword()); // todo хеширование
-        }
     }
 } 

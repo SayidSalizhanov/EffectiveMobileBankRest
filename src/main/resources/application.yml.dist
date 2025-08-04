@@ -1,13 +1,13 @@
 spring:
   application:
     name: bank-rest-api
-  
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank_db
-    username: bank_user
-    password: bank_password
+    url:
+    username:
+    password:
     driver-class-name: org.postgresql.Driver
-  
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -16,11 +16,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  
+
   liquibase:
     enabled: true
     change-log: classpath:db/migration/changelog-master.yaml
-  
+
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -35,6 +35,10 @@ logging:
     org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+jwt:
+  secret:
+  expiration:
 
 card:
   expired:

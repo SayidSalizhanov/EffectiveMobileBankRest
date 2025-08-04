@@ -7,6 +7,7 @@ import com.example.bankcards.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers(
             @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
@@ -33,24 +35,28 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUserById(@PathVariable("userId") UUID userId) {
         return userService.getById(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public UUID create(@Valid @RequestBody UserCreateRequest request) {
         return userService.create(request);
     }
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void update(@PathVariable("userId") UUID userId, @Valid @RequestBody UserUpdateRequest request) {
         userService.update(userId, request);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable("userId") UUID userId) {
         userService.delete(userId);
     }

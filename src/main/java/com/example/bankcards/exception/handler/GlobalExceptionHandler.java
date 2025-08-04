@@ -2,6 +2,7 @@ package com.example.bankcards.exception.handler;
 
 import com.example.bankcards.dto.response.ExceptionMessage;
 import com.example.bankcards.exception.ServiceException;
+import com.example.bankcards.exception.custom.BadCredentialsException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +97,24 @@ public class GlobalExceptionHandler {
         exception.printStackTrace();
         return ExceptionMessage.builder()
                 .message(exception.getMessage())
+                .exceptionName(exception.getClass().getSimpleName())
+                .build();
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public final ExceptionMessage handleBadCredentialsException(BadCredentialsException exception) {
+        return ExceptionMessage.builder()
+                .message(exception.getMessage())
+                .exceptionName(exception.getClass().getSimpleName())
+                .build();
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public final ExceptionMessage handleAccessDeniedException(AccessDeniedException exception) {
+        return ExceptionMessage.builder()
+                .message("Access denied")
                 .exceptionName(exception.getClass().getSimpleName())
                 .build();
     }

@@ -16,6 +16,7 @@ import com.example.bankcards.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
     
     @Override
     @Transactional(readOnly = true)
@@ -70,8 +72,11 @@ public class UserServiceImpl implements UserService {
     public void update(UUID userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
-        
-        userMapper.updateEntity(user, request);
+
+        if (request.newPassword() != null && passwordEncoder.encode(request.oldPassword()).equals(user.getPasswordHash())) {
+            user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        }
+
         userRepository.save(user);
     }
     

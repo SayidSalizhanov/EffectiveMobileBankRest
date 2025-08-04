@@ -5,6 +5,7 @@ import com.example.bankcards.service.TransferService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class TransferController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void transfer(@Valid @RequestBody TransferRequest request) {
         transferService.transfer(request);
     }
