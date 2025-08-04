@@ -4,8 +4,6 @@ import com.example.bankcards.dto.request.CardCreateRequest;
 import com.example.bankcards.dto.response.BalanceResponse;
 import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.service.BlockRequestService;
-import com.example.bankcards.service.CardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.bankcards.util.ValidationValues.Page.*;
+import static com.example.bankcards.util.ValidationValues.Page.LIMIT_DEFAULT_VALUE;
+import static com.example.bankcards.util.ValidationValues.Page.OFFSET_DEFAULT_VALUE;
 
-@RestController
-@RequestMapping("/api/cards")
-@RequiredArgsConstructor
 @Tag(name = "Управление картами", description = "Операции с банковскими картами")
-public class CardController {
+@RequestMapping("/api/cards")
+public interface CardApi {
 
-    private final CardService cardService;
-    private final BlockRequestService blockRequestService;
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
             summary = "Получить список карт",
             description = "Возвращает список всех банковских карт с пагинацией",
@@ -47,19 +37,17 @@ public class CardController {
                     )
             }
     )
-    public List<CardResponse> getCards(
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    List<CardResponse> getCards(
             @Parameter(description = "Номер страницы", example = "0")
             @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
 
             @Parameter(description = "Размер страницы", example = "10")
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
-    ) {
-        return cardService.getAll(page, size);
-    }
+    );
 
-    @GetMapping("/{number}")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
             summary = "Получить карту по номеру",
             description = "Возвращает детальную информацию о карте по её номеру",
@@ -71,16 +59,14 @@ public class CardController {
                     )
             }
     )
-    public CardResponse getCardByNumber(
+    @GetMapping("/{number}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    CardResponse getCardByNumber(
             @Parameter(description = "Номер карты", example = "1234567812345678")
             @PathVariable("number") String number
-    ) {
-        return cardService.getByNumber(number);
-    }
+    );
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Создать новую карту",
             description = "Создает новую банковскую карту (только для администраторов)",
@@ -88,13 +74,11 @@ public class CardController {
                     @ApiResponse(responseCode = "201", description = "Карта успешно создана")
             }
     )
-    public void createCard(@Valid @RequestBody CardCreateRequest request) {
-        cardService.create(request);
-    }
-
-    @PostMapping("/{number}/block")
-    @ResponseStatus(HttpStatus.OK)
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    void createCard(@Valid @RequestBody CardCreateRequest request);
+
     @Operation(
             summary = "Заблокировать карту",
             description = "Немедленно блокирует банковскую карту (только для администраторов)",
@@ -102,16 +86,14 @@ public class CardController {
                     @ApiResponse(responseCode = "200", description = "Карта успешно заблокирована")
             }
     )
-    public void blockCard(
-            @Parameter(description = "Номер карты", example = "1234567812345678")
-            @PathVariable("number") String number
-    ) {
-        cardService.block(number);
-    }
-
-    @PostMapping("/{number}/activate")
+    @PostMapping("/{number}/block")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
+    void blockCard(
+            @Parameter(description = "Номер карты", example = "1234567812345678")
+            @PathVariable("number") String number
+    );
+
     @Operation(
             summary = "Активировать карту",
             description = "Активирует заблокированную банковскую карту (только для администраторов)",
@@ -119,16 +101,14 @@ public class CardController {
                     @ApiResponse(responseCode = "200", description = "Карта успешно активирована")
             }
     )
-    public void activateCard(
+    @PostMapping("/{number}/activate")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    void activateCard(
             @Parameter(description = "Номер карты", example = "1234567812345678")
             @PathVariable("number") String number
-    ) {
-        cardService.activate(number);
-    }
+    );
 
-    @DeleteMapping("/{number}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Удалить карту",
             description = "Удаляет банковскую карту из системы (только для администраторов)",
@@ -136,16 +116,14 @@ public class CardController {
                     @ApiResponse(responseCode = "204", description = "Карта успешно удалена")
             }
     )
-    public void deleteCard(
+    @DeleteMapping("/{number}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
+    void deleteCard(
             @Parameter(description = "Номер карты", example = "1234567812345678")
             @PathVariable("number") String number
-    ) {
-        cardService.delete(number);
-    }
+    );
 
-    @GetMapping("/{number}/balance")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
             summary = "Получить баланс карты",
             description = "Возвращает текущий баланс банковской карты",
@@ -157,18 +135,16 @@ public class CardController {
                     )
             }
     )
-    public BalanceResponse getCardBalance(
+    @GetMapping("/{number}/balance")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    BalanceResponse getCardBalance(
             @Parameter(description = "Номер карты", example = "1234567812345678")
             @PathVariable("number") String number
-    ) {
-        return cardService.getBalance(number);
-    }
+    );
 
     // block-requests
 
-    @PostMapping("/{number}/block-request")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
     @Operation(
             summary = "Создать запрос на блокировку",
             description = "Создает запрос на блокировку карты (только для пользователей)",
@@ -176,16 +152,14 @@ public class CardController {
                     @ApiResponse(responseCode = "200", description = "Запрос на блокировку создан")
             }
     )
-    public void blockCardRequest(
+    @PostMapping("/{number}/block-request")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
+    void blockCardRequest(
             @Parameter(description = "Номер карты", example = "1234567812345678")
             @PathVariable("number") String number
-    ) {
-        cardService.blockRequest(number);
-    }
+    );
 
-    @GetMapping("/block-requests")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Получить все запросы на блокировку",
             description = "Возвращает список всех запросов на блокировку карт",
@@ -197,19 +171,17 @@ public class CardController {
                     )
             }
     )
-    public List<BlockRequestResponse> getAllBlockRequests(
+    @GetMapping("/block-requests")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    List<BlockRequestResponse> getAllBlockRequests(
             @Parameter(description = "Номер страницы", example = "0")
             @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
 
             @Parameter(description = "Размер страницы", example = "10")
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
-    ) {
-        return blockRequestService.getAll(page, size);
-    }
+    );
 
-    @GetMapping("/block-requests/status/{status}")
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Получить запросы по статусу",
             description = "Возвращает список запросов на блокировку по указанному статусу",
@@ -221,7 +193,10 @@ public class CardController {
                     )
             }
     )
-    public List<BlockRequestResponse> getBlockRequestsByStatus(
+    @GetMapping("/block-requests/status/{status}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    List<BlockRequestResponse> getBlockRequestsByStatus(
             @Parameter(description = "Статус запроса", example = "PENDING")
             @PathVariable String status,
 
@@ -230,13 +205,8 @@ public class CardController {
 
             @Parameter(description = "Размер страницы", example = "10")
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
-    ) {
-        return blockRequestService.getByStatus(status, page, size);
-    }
+    );
 
-    @PostMapping("/block-requests/{requestId}/approve")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Одобрить запрос на блокировку",
             description = "Одобряет запрос на блокировку карты (только для администраторов)",
@@ -244,16 +214,14 @@ public class CardController {
                     @ApiResponse(responseCode = "204", description = "Запрос успешно одобрен")
             }
     )
-    public void approveBlockRequest(
-            @Parameter(description = "ID запроса", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
-            @PathVariable UUID requestId
-    ) {
-        blockRequestService.approve(requestId);
-    }
-
-    @PostMapping("/block-requests/{requestId}/reject")
+    @PostMapping("/block-requests/{requestId}/approve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
+    void approveBlockRequest(
+            @Parameter(description = "ID запроса", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
+            @PathVariable UUID requestId
+    );
+
     @Operation(
             summary = "Отклонить запрос на блокировку",
             description = "Отклоняет запрос на блокировку карты (только для администраторов)",
@@ -261,10 +229,11 @@ public class CardController {
                     @ApiResponse(responseCode = "204", description = "Запрос успешно отклонен")
             }
     )
-    public void rejectBlockRequest(
+    @PostMapping("/block-requests/{requestId}/reject")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
+    void rejectBlockRequest(
             @Parameter(description = "ID запроса", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
             @PathVariable UUID requestId
-    ) {
-        blockRequestService.reject(requestId);
-    }
+    );
 }
