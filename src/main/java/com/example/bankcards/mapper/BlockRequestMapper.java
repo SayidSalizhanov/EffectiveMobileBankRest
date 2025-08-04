@@ -1,10 +1,7 @@
 package com.example.bankcards.mapper;
 
-import com.example.bankcards.dto.request.BlockRequestCreateRequest;
 import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.entity.BlockRequest;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.enums.BlockRequestStatus;
 import com.example.bankcards.util.CardUtil;
 import org.springframework.stereotype.Component;
 

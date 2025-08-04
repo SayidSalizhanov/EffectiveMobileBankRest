@@ -6,6 +6,7 @@ import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.service.BlockRequestService;
 import com.example.bankcards.service.CardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class CardController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCard(@RequestBody CardCreateRequest request) {
+    public void createCard(@Valid @RequestBody CardCreateRequest request) {
         cardService.create(request);
     }
 

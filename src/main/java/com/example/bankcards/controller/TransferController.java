@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.service.TransferService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class TransferController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void transfer(@RequestBody TransferRequest request) {
+    public void transfer(@Valid @RequestBody TransferRequest request) {
         transferService.transfer(request);
     }
 }

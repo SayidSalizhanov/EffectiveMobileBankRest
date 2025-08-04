@@ -1,6 +1,5 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.request.BlockRequestCreateRequest;
 import com.example.bankcards.dto.response.BlockRequestResponse;
 
 import java.util.List;

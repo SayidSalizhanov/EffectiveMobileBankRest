@@ -4,6 +4,7 @@ import com.example.bankcards.dto.request.UserCreateRequest;
 import com.example.bankcards.dto.request.UserUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -38,13 +39,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UUID create(@RequestBody UserCreateRequest request) {
+    public UUID create(@Valid @RequestBody UserCreateRequest request) {
         return userService.create(request);
     }
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("userId") UUID userId, @RequestBody UserUpdateRequest request) {
+    public void update(@PathVariable("userId") UUID userId, @Valid @RequestBody UserUpdateRequest request) {
         userService.update(userId, request);
     }
 
