@@ -1,1 +1,693 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.3
+info:
+  title: Bank Cards API
+  version: 1.0.0
+  description: API для управления банковскими картами и пользователями
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+tags:
+  - name: Аутентификация
+    description: Управление аутентификацией пользователей
+  - name: Управление картами
+    description: Операции с банковскими картами
+  - name: Переводы
+    description: Операции перевода средств между картами
+  - name: Управление пользователями
+    description: Операции с пользователями системы (только для администраторов)
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Аутентификация
+      summary: Аутентификация пользователя
+      description: Выполняет вход пользователя в систему и возвращает JWT токен
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+
+  /api/cards:
+    get:
+      tags:
+        - Управление картами
+      summary: Получить список карт
+      description: Возвращает список всех банковских карт с пагинацией
+      security:
+        - bearerAuth: ['USER', 'ADMIN']
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список карт успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+
+    post:
+      tags:
+        - Управление картами
+      summary: Создать новую карту
+      description: Создает новую банковскую карту (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardCreateRequest'
+      responses:
+        '201':
+          description: Карта успешно создана
+
+  /api/cards/{number}:
+    get:
+      tags:
+        - Управление картами
+      summary: Получить карту по номеру
+      description: Возвращает детальную информацию о карте по её номеру
+      security:
+        - bearerAuth: ['USER', 'ADMIN']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '200':
+          description: Информация о карте успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+
+    delete:
+      tags:
+        - Управление картами
+      summary: Удалить карту
+      description: Удаляет банковскую карту из системы (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '204':
+          description: Карта успешно удалена
+
+  /api/cards/{number}/block:
+    post:
+      tags:
+        - Управление картами
+      summary: Заблокировать карту
+      description: Немедленно блокирует банковскую карту (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '200':
+          description: Карта успешно заблокирована
+
+  /api/cards/{number}/activate:
+    post:
+      tags:
+        - Управление картами
+      summary: Активировать карту
+      description: Активирует заблокированную банковскую карту (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '200':
+          description: Карта успешно активирована
+
+  /api/cards/{number}/balance:
+    get:
+      tags:
+        - Управление картами
+      summary: Получить баланс карты
+      description: Возвращает текущий баланс банковской карты
+      security:
+        - bearerAuth: ['USER', 'ADMIN']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '200':
+          description: Баланс успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+
+  /api/cards/{number}/block-request:
+    post:
+      tags:
+        - Управление картами
+      summary: Создать запрос на блокировку
+      description: Создает запрос на блокировку карты (только для пользователей)
+      security:
+        - bearerAuth: ['USER']
+      parameters:
+        - name: number
+          in: path
+          required: true
+          description: Номер карты
+          schema:
+            type: string
+            example: "1234567812345678"
+      responses:
+        '200':
+          description: Запрос на блокировку создан
+
+  /api/cards/block-requests:
+    get:
+      tags:
+        - Управление картами
+      summary: Получить все запросы на блокировку
+      description: Возвращает список всех запросов на блокировку карт
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список запросов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockRequestResponse'
+
+  /api/cards/block-requests/status/{status}:
+    get:
+      tags:
+        - Управление картами
+      summary: Получить запросы по статусу
+      description: Возвращает список запросов на блокировку по указанному статусу
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: status
+          in: path
+          required: true
+          description: Статус запроса
+          schema:
+            type: string
+            example: "PENDING"
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список запросов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockRequestResponse'
+
+  /api/cards/block-requests/{requestId}/approve:
+    post:
+      tags:
+        - Управление картами
+      summary: Одобрить запрос на блокировку
+      description: Одобряет запрос на блокировку карты (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          description: ID запроса
+          schema:
+            type: string
+            format: uuid
+            example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+      responses:
+        '204':
+          description: Запрос успешно одобрен
+
+  /api/cards/block-requests/{requestId}/reject:
+    post:
+      tags:
+        - Управление картами
+      summary: Отклонить запрос на блокировку
+      description: Отклоняет запрос на блокировку карты (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          description: ID запроса
+          schema:
+            type: string
+            format: uuid
+            example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+      responses:
+        '204':
+          description: Запрос успешно отклонен
+
+  /api/transfers:
+    post:
+      tags:
+        - Переводы
+      summary: Выполнить перевод
+      description: Переводит средства между банковскими картами
+      security:
+        - bearerAuth: ['USER', 'ADMIN']
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '200':
+          description: Перевод успешно выполнен
+
+  /api/users:
+    get:
+      tags:
+        - Управление пользователями
+      summary: Получить список пользователей
+      description: Возвращает список всех пользователей системы с пагинацией
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список пользователей успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+    post:
+      tags:
+        - Управление пользователями
+      summary: Создать нового пользователя
+      description: Регистрирует нового пользователя в системе
+      security:
+        - bearerAuth: ['ADMIN']
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+
+  /api/users/{userId}:
+    get:
+      tags:
+        - Управление пользователями
+      summary: Получить пользователя по ID
+      description: Возвращает детальную информацию о пользователе по его идентификатору
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID пользователя
+          schema:
+            type: string
+            format: uuid
+            example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+      responses:
+        '200':
+          description: Информация о пользователе успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+    put:
+      tags:
+        - Управление пользователями
+      summary: Обновить пароль пользователя
+      description: Изменяет пароль пользователя (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID пользователя
+          schema:
+            type: string
+            format: uuid
+            example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '204':
+          description: Пароль успешно обновлен
+
+    delete:
+      tags:
+        - Управление пользователями
+      summary: Удалить пользователя
+      description: Удаляет пользователя из системы (только для администраторов)
+      security:
+        - bearerAuth: ['ADMIN']
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID пользователя
+          schema:
+            type: string
+            format: uuid
+            example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+      responses:
+        '204':
+          description: Пользователь успешно удален
+
+components:
+  schemas:
+    AuthenticationRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          example: user123
+          minLength: 3
+          maxLength: 50
+        password:
+          type: string
+          description: Пароль пользователя
+          example: password123
+          minLength: 6
+          maxLength: 255
+
+    CardCreateRequest:
+      type: object
+      required:
+        - number
+        - expirationDate
+        - ownerId
+      properties:
+        number:
+          type: string
+          description: Номер карты (16 цифр)
+          example: "1234567812345678"
+          pattern: '^\d{16}$'
+        expirationDate:
+          type: string
+          format: year-month
+          description: Дата окончания действия (MM-yyyy)
+          example: "2025-12"
+        ownerId:
+          type: string
+          format: uuid
+          description: ID владельца карты
+          example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+
+    TransferRequest:
+      type: object
+      required:
+        - numberFrom
+        - numberTo
+        - amount
+      properties:
+        numberFrom:
+          type: string
+          description: Номер карты отправителя
+          example: "1234567812345678"
+          pattern: '^\d{16}$'
+        numberTo:
+          type: string
+          description: Номер карты получателя
+          example: "8765432187654321"
+          pattern: '^\d{16}$'
+        amount:
+          type: number
+          format: decimal
+          description: Сумма перевода
+          example: 100.50
+          minimum: 0.01
+          exclusiveMinimum: false
+
+    UserCreateRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          example: new_user
+          minLength: 3
+          maxLength: 50
+        password:
+          type: string
+          description: Пароль пользователя
+          example: securePassword123
+          minLength: 6
+          maxLength: 255
+
+    UserUpdateRequest:
+      type: object
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          description: Текущий пароль
+          example: oldPassword123
+        newPassword:
+          type: string
+          description: Новый пароль
+          example: newSecurePassword456
+          minLength: 6
+          maxLength: 255
+
+    AuthenticationResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT токен доступа
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    BalanceResponse:
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          description: Номер карты
+          example: "1234567812345678"
+        balance:
+          type: number
+          format: decimal
+          description: Текущий баланс
+          example: 1500.75
+
+    BlockRequestResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+          format: uuid
+          description: ID запроса
+          example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+        cardNumber:
+          type: string
+          description: Номер карты
+          example: "1234567812345678"
+        requesterLogin:
+          type: string
+          description: Логин инициатора запроса
+          example: user123
+        status:
+          type: string
+          description: Статус запроса
+          example: PENDING
+          enum:
+            - PENDING
+            - APPROVED
+            - REJECTED
+        requestDate:
+          type: string
+          format: date-time
+          description: Дата создания запроса
+          example: "2024-01-01T12:00:00"
+        processedDate:
+          type: string
+          format: date-time
+          description: Дата обработки запроса
+          example: "2024-01-02T10:30:00"
+        reason:
+          type: string
+          description: Причина блокировки (если отклонено)
+          example: Недостаточно оснований
+
+    CardResponse:
+      type: object
+      properties:
+        number:
+          type: string
+          description: Номер карты
+          example: "1234567812345678"
+        expirationDate:
+          type: string
+          format: year-month
+          description: Дата окончания действия
+          example: "2025-12"
+        status:
+          type: string
+          description: Статус карты
+          example: ACTIVE
+          enum:
+            - ACTIVE
+            - BLOCKED
+        balance:
+          type: number
+          format: decimal
+          description: Текущий баланс
+          example: 1500.75
+        ownerId:
+          type: string
+          format: uuid
+          description: ID владельца карты
+          example: "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3"
+
+    UserResponse:
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+          example: user123
+        cardsNumbers:
+          type: array
+          description: Номера карт, привязанных к пользователю
+          items:
+            type: string
+            example: "1234567812345678"
+        rolesNames:
+          type: array
+          description: Роли пользователя
+          items:
+            type: string
+            example: "ROLE_USER"
+        blockRequestStatuses:
+          type: array
+          description: Статусы запросов на блокировку, инициированных пользователем
+          items:
+            type: string
+            example: "PENDING"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
