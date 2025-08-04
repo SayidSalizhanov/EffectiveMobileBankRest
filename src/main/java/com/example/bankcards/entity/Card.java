@@ -1,6 +1,7 @@
 package com.example.bankcards.entity;
 
 import com.example.bankcards.enums.CardStatusEnum;
+import com.example.bankcards.util.YearMonthConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class Card {
     @Column(length = 16, nullable = false)
     private String number;
 
+    @Convert(converter = YearMonthConverter.class)
     @Column(name = "expiration_date", nullable = false)
     private YearMonth expirationDate;
 

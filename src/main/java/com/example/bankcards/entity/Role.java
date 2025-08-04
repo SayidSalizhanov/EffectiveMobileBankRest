@@ -2,10 +2,7 @@ package com.example.bankcards.entity;
 
 import com.example.bankcards.enums.RoleNameEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +12,8 @@ import java.util.UUID;
 @Table(name = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
