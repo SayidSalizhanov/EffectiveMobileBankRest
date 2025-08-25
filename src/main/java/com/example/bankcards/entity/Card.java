@@ -3,19 +3,18 @@ package com.example.bankcards.entity;
 import com.example.bankcards.enums.CardStatusEnum;
 import com.example.bankcards.util.YearMonthConverter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cards")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Card {
     @Id
@@ -40,4 +39,20 @@ public class Card {
             nullable = false
     )
     private User owner;
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Card card = (Card) object;
+        return Objects.equals(number, card.number)
+                && Objects.equals(expirationDate, card.expirationDate)
+                && status == card.status
+                && Objects.equals(balance, card.balance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, expirationDate, status, balance);
+    }
 }

@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class User implements UserDetails {
     @Id
@@ -32,7 +33,6 @@ public class User implements UserDetails {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @ToString.Exclude
     private List<Card> cards = new ArrayList<>();
 
     @OneToMany(
@@ -40,7 +40,6 @@ public class User implements UserDetails {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @ToString.Exclude
     private List<BlockRequest> blockRequests = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -49,7 +48,6 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 
     public void addRole(Role role) {
@@ -92,5 +90,20 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        User user = (User) object;
+        return Objects.equals(userId, user.userId)
+                && Objects.equals(login, user.login)
+                && Objects.equals(passwordHash, user.passwordHash);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, login, passwordHash);
     }
 }

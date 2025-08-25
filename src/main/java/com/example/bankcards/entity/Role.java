@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,18 @@ public class Role {
     private RoleNameEnum name;
 
     @ManyToMany(mappedBy = "roles")
-    @ToString.Exclude
     private Set<User> users = new HashSet<>();
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Role role = (Role) object;
+        return Objects.equals(roleId, role.roleId) && name == role.name;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId, name);
+    }
 }

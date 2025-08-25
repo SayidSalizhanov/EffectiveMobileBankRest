@@ -2,19 +2,18 @@ package com.example.bankcards.entity;
 
 import com.example.bankcards.enums.BlockRequestStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "block_requests")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class BlockRequest {
     @Id
@@ -45,4 +44,22 @@ public class BlockRequest {
     
     @Column(name = "reason")
     private String reason;
-} 
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        BlockRequest that = (BlockRequest) object;
+        return Objects.equals(requestId, that.requestId)
+                && Objects.equals(cardNumber, that.cardNumber)
+                && status == that.status
+                && Objects.equals(requestDate, that.requestDate)
+                && Objects.equals(processedDate, that.processedDate)
+                && Objects.equals(reason, that.reason);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(requestId, cardNumber, status, requestDate, processedDate, reason);
+    }
+}
