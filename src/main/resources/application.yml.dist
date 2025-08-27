@@ -40,6 +40,13 @@ jwt:
   secret:
   expiration:
 
+cors:
+  allowed-origins:
+  allowed-methods:
+  allowed-headers:
+  allow-credentials:
+  max-age:
+
 card:
   expired:
     scheduler:
