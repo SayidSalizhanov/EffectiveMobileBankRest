@@ -1,7 +1,7 @@
 package com.example.bankcards.exception.handler;
 
 import com.example.bankcards.dto.response.ExceptionMessage;
-import com.example.bankcards.exception.ServiceException;
+import com.example.bankcards.exception.base.ServiceException;
 import com.example.bankcards.exception.custom.BadCredentialsException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
