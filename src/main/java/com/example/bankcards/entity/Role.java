@@ -29,15 +29,15 @@ public class Role {
     private Set<User> users = new HashSet<>();
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Role role = (Role) object;
-        return Objects.equals(roleId, role.roleId) && name == role.name;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(roleId, role.roleId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, name);
+        return Objects.hash(roleId);
     }
 }

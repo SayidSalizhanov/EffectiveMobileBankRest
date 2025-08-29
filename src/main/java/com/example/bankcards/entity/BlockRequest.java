@@ -46,20 +46,15 @@ public class BlockRequest {
     private String reason;
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        BlockRequest that = (BlockRequest) object;
-        return Objects.equals(requestId, that.requestId)
-                && Objects.equals(cardNumber, that.cardNumber)
-                && status == that.status
-                && Objects.equals(requestDate, that.requestDate)
-                && Objects.equals(processedDate, that.processedDate)
-                && Objects.equals(reason, that.reason);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockRequest that = (BlockRequest) o;
+        return Objects.equals(requestId, that.requestId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(requestId, cardNumber, status, requestDate, processedDate, reason);
+        return Objects.hash(requestId);
     }
 }

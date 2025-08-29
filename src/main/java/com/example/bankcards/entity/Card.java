@@ -41,18 +41,15 @@ public class Card {
     private User owner;
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Card card = (Card) object;
-        return Objects.equals(number, card.number)
-                && Objects.equals(expirationDate, card.expirationDate)
-                && status == card.status
-                && Objects.equals(balance, card.balance);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Objects.equals(number, card.number);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(number, expirationDate, status, balance);
+        return Objects.hash(number);
     }
 }
