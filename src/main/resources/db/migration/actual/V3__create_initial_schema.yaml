@@ -1,0 +1,253 @@
+databaseChangeLog:
+  - changeSet:
+      id: V3_1
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - sqlCheck:
+            sql: SELECT COUNT(*) FROM pg_extension WHERE extname = 'pgcrypto'
+            expectedResult: 0
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "pgcrypto"
+
+  - changeSet:
+      id: V3_2
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - not:
+            tableExists:
+              tableName: roles
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: roles
+            schemaName: public
+            columns:
+              - column:
+                  name: role_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: V3_3
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - not:
+            tableExists:
+              tableName: users
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: users
+            schemaName: public
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: V3_4
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - not:
+            tableExists:
+              tableName: cards
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: cards
+            schemaName: public
+            columns:
+              - column:
+                  name: number
+                  type: VARCHAR(16)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: expiration_date
+                  type: VARCHAR(7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            constraintName: fk_cards_user_id
+            referencedTableName: users
+            referencedColumnNames: user_id
+
+  - changeSet:
+      id: V3_5
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - not:
+            tableExists:
+              tableName: user_role
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: user_role
+            schemaName: public
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: user_role
+            columnNames: user_id, role_id
+            constraintName: pk_user_role
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: user_id
+            constraintName: fk_user_id
+            referencedTableName: users
+            referencedColumnNames: user_id
+        - addForeignKeyConstraint:
+            baseTableName: user_role
+            baseColumnNames: role_id
+            constraintName: fk_role_id
+            referencedTableName: roles
+            referencedColumnNames: role_id
+
+  - changeSet:
+      id: V3_6
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - sqlCheck:
+            sql: SELECT COUNT(*) FROM roles WHERE name = 'ROLE_ADMIN'
+            expectedResult: 0
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_ADMIN
+
+  - changeSet:
+      id: V3_7
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - sqlCheck:
+            sql: SELECT COUNT(*) FROM roles WHERE name = 'ROLE_USER'
+            expectedResult: 0
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: ROLE_USER
+
+  - changeSet:
+      id: V3_8
+      author: initial_schema
+      preConditions:
+        - onFail: WARN
+        - not:
+            tableExists:
+              tableName: block_requests
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: block_requests
+            schemaName: public
+            columns:
+              - column:
+                  name: request_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_number
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_date
+                  type: TIMESTAMP
+              - column:
+                  name: reason
+                  type: TEXT
+        - addForeignKeyConstraint:
+            baseTableName: block_requests
+            baseColumnNames: user_id
+            constraintName: fk_block_requests_user_id
+            referencedTableName: users
+            referencedColumnNames: user_id
+        - addForeignKeyConstraint:
+            baseTableName: block_requests
+            baseColumnNames: card_number
+            constraintName: fk_block_requests_card_number
+            referencedTableName: cards
+            referencedColumnNames: number
