@@ -22,7 +22,7 @@
 
         <jjwt.version>0.12.5</jjwt.version>
         <liquibase.version>4.27.0</liquibase.version>
-        <springdoc.version>2.5.0</springdoc.version>
+        <springdoc.version>2.6.0</springdoc.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
 
