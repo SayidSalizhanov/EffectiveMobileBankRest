@@ -21,10 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Глобальный перехватчик исключений.
+ * Преобразует исключения в унифицированные ответы {@link ExceptionMessage}.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // обработчик для исключений, когда не можем преобразовать значение аргумента метода контроллера в ожидаемый тип
+    /** Ошибка преобразования типа аргумента контроллера. */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ExceptionMessage handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
@@ -35,6 +39,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /** Нечитаемое тело запроса. */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ExceptionMessage handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
@@ -45,7 +50,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    // обработчик для исключений, когда происходит ошибка валидации методов или параметров контроллера
+    /** Ошибки валидации параметров/методов контроллера. */
     @ExceptionHandler(HandlerMethodValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ExceptionMessage handleMethodValidationException(HandlerMethodValidationException exception) {
@@ -63,7 +68,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    // обработчик для исключений, когда не проходит валидация объекта DTO
+    /** Ошибки валидации DTO. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public final ExceptionMessage handleValidationException(MethodArgumentNotValidException exception) {
@@ -79,7 +84,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    // обработчик для исключений, когда происходят на уровне сервиса
+    /** Исключения уровня сервиса с собственным HTTP-статусом. */
     @ExceptionHandler(ServiceException.class)
     public final ResponseEntity<ExceptionMessage> handleServiceException(ServiceException exception) {
         return ResponseEntity.status(exception.getStatus())
@@ -90,7 +95,7 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    // обработчик для всех остальных исключений, которых не должно было быть
+    /** Непредвиденные исключения. */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final ExceptionMessage onAllExceptions(Exception exception) {
@@ -101,6 +106,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /** Неверные учетные данные. */
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public final ExceptionMessage handleBadCredentialsException(BadCredentialsException exception) {
@@ -110,6 +116,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /** Доступ запрещен. */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public final ExceptionMessage handleAccessDeniedException(AccessDeniedException exception) {

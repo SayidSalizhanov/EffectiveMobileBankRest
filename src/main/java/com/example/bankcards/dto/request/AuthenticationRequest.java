@@ -4,6 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Запрос на аутентификацию: содержит логин и пароль пользователя.
+ * @param login логин
+ * @param password пароль
+ */
 @Schema(description = "Запрос на аутентификацию")
 public record AuthenticationRequest(
         @Schema(description = "Логин пользователя", example = "user123", minLength = 3, maxLength = 50)

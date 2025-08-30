@@ -7,9 +7,17 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * Маппер для преобразования запросов на блокировку в DTO.
+ */
 @Component
 public class BlockRequestMapper {
     
+    /**
+     * Преобразует сущность BlockRequest в DTO ответа, маскируя номер карты.
+     * @param blockRequest запрос на блокировку
+     * @return dto запроса на блокировку (response)
+     */
     public BlockRequestResponse toResponse(BlockRequest blockRequest) {
         return BlockRequestResponse.builder()
                 .requestId(blockRequest.getRequestId())

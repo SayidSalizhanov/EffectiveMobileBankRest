@@ -9,6 +9,10 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.Objects;
 
+/**
+ * Сущность банковской карты с данными о владельце, балансе, статусе и сроке действия.
+ * Первичный ключ — номер карты.
+ */
 @Entity
 @Table(name = "cards")
 @AllArgsConstructor

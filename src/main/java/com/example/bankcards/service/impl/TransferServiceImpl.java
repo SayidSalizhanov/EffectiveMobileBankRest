@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+/**
+ * Реализация {@link com.example.bankcards.service.TransferService}.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -20,6 +23,7 @@ public class TransferServiceImpl implements TransferService {
     
     private final CardRepository cardRepository;
 
+    /** {@inheritDoc} */
     @Override
     public void transfer(TransferRequest request) {
         Card fromCard = cardRepository.findByNumber(request.numberFrom())

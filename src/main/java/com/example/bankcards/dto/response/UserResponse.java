@@ -6,6 +6,13 @@ import lombok.Builder;
 
 import java.util.List;
 
+/**
+ * Ответ с агрегированной информацией о пользователе: логин, карты, роли и статусы запросов.
+ * @param login логин
+ * @param cardsNumbers карты пользователя
+ * @param rolesNames роли пользователя
+ * @param blockRequestStatuses статусы запросов на блокировку карт
+ */
 @Builder
 @Schema(description = "Ответ с информацией о пользователе")
 public record UserResponse(

@@ -6,7 +6,7 @@ import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.BlockRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.enums.BlockRequestStatusEnum;
 import com.example.bankcards.enums.CardStatusEnum;
 import com.example.bankcards.exception.custom.CardNotFoundException;
 import com.example.bankcards.exception.custom.UserNotFoundException;
@@ -27,6 +27,9 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация {@link com.example.bankcards.service.CardService}.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -36,7 +39,8 @@ public class CardServiceImpl implements CardService {
     private final UserRepository userRepository;
     private final BlockRequestRepository blockRequestRepository;
     private final CardMapper cardMapper;
-    
+
+    /** {@inheritDoc} */
     @Override
     @Transactional(readOnly = true)
     public List<CardResponse> getAll(Integer page, Integer size) {
@@ -46,14 +50,16 @@ public class CardServiceImpl implements CardService {
                 .map(cardMapper::toResponse)
                 .collect(Collectors.toList());
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     @Transactional(readOnly = true)
     public CardResponse getByNumber(String number) {
         Card card = requireByNumber(number);
         return cardMapper.toResponse(card);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void create(CardCreateRequest request) {
         User owner = userRepository.findById(request.ownerId())
@@ -62,7 +68,8 @@ public class CardServiceImpl implements CardService {
         Card card = cardMapper.toEntity(request, owner);
         cardRepository.save(card);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void block(String number) {
         Card card = requireByNumber(number);
@@ -70,7 +77,8 @@ public class CardServiceImpl implements CardService {
         card.setStatus(CardStatusEnum.BLOCKED);
         cardRepository.save(card);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void activate(String number) {
         Card card = requireByNumber(number);
@@ -83,7 +91,8 @@ public class CardServiceImpl implements CardService {
         
         cardRepository.save(card);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void delete(String number) {
         if (!cardRepository.existsByNumber(number)) {
@@ -91,7 +100,8 @@ public class CardServiceImpl implements CardService {
         }
         cardRepository.deleteById(number);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void blockRequest(String number) {
         Card card = requireByNumber(number);
@@ -99,14 +109,15 @@ public class CardServiceImpl implements CardService {
         BlockRequest blockRequest = BlockRequest.builder()
                 .cardNumber(number)
                 .requester(card.getOwner())
-                .status(BlockRequestStatus.PENDING)
+                .status(BlockRequestStatusEnum.PENDING)
                 .requestDate(LocalDateTime.now())
                 .reason("User requested card block")
                 .build();
         
         blockRequestRepository.save(blockRequest);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     @Transactional(readOnly = true)
     public BalanceResponse getBalance(String number) {
@@ -114,6 +125,7 @@ public class CardServiceImpl implements CardService {
         return cardMapper.toBalanceResponse(card);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void updateExpiredCards() {
         List<Card> expiredCards = cardRepository.findExpiredCards(YearMonth.now());
@@ -123,6 +135,11 @@ public class CardServiceImpl implements CardService {
         });
     }
 
+    /**
+     * Проверка наличия в базе и получение карты по id.
+     * @param number номер карты
+     * @return сущность карты
+     */
     private Card requireByNumber(String number) {
         return cardRepository.findByNumber(number)
                 .orElseThrow(() -> new CardNotFoundException("Card not found with number: " + number));

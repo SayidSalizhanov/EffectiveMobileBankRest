@@ -7,6 +7,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * Планировщик, помечающий карты со истекшим сроком действия как EXPIRED.
+ * Запускается раз в месяц в 02:00, если включен свойством card.expired.scheduler.enabled=true.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -15,6 +19,7 @@ public class ExpiredCardScheduler {
 
     private final CardService cardService;
 
+    /** Выполняет обработку просроченных карт. */
     @Scheduled(cron = "0 0 2 1 * ?") // every month 02:00
     public void processExpiredCards() {
         try {

@@ -4,6 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Запрос на создание нового пользователя.
+ * @param login логин
+ * @param password пароль
+ */
 @Schema(description = "Запрос на создание пользователя")
 public record UserCreateRequest(
         @Schema(description = "Логин пользователя", example = "new_user", minLength = 3, maxLength = 50)

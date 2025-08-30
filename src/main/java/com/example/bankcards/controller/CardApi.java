@@ -22,10 +22,21 @@ import java.util.UUID;
 import static com.example.bankcards.util.ValidationValues.Page.LIMIT_DEFAULT_VALUE;
 import static com.example.bankcards.util.ValidationValues.Page.OFFSET_DEFAULT_VALUE;
 
+/**
+ * REST API для управления банковскими картами и связанными запросами на блокировку.
+ * Включает операции получения, создания, блокировки, активации и удаления карт,
+ * а также работу с запросами на блокировку и получение баланса.
+ */
 @Tag(name = "Управление картами", description = "Операции с банковскими картами")
 @RequestMapping("/api/cards")
 public interface CardApi {
 
+    /**
+     * Возвращает список всех банковских карт с пагинацией.
+     * @param page номер страницы (начиная с 0)
+     * @param size размер страницы
+     * @return список карт
+     */
     @Operation(
             summary = "Получить список карт",
             description = "Возвращает список всех банковских карт с пагинацией",
@@ -48,6 +59,11 @@ public interface CardApi {
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
     );
 
+    /**
+     * Возвращает детальную информацию о карте по её номеру.
+     * @param number номер карты
+     * @return данные карты
+     */
     @Operation(
             summary = "Получить карту по номеру",
             description = "Возвращает детальную информацию о карте по её номеру",
@@ -67,6 +83,10 @@ public interface CardApi {
             @PathVariable("number") String number
     );
 
+    /**
+     * Создает новую банковскую карту.
+     * @param request данные для создания карты
+     */
     @Operation(
             summary = "Создать новую карту",
             description = "Создает новую банковскую карту (только для администраторов)",
@@ -79,6 +99,10 @@ public interface CardApi {
     @PreAuthorize("hasRole('ADMIN')")
     void createCard(@Valid @RequestBody CardCreateRequest request);
 
+    /**
+     * Блокирует банковскую карту.
+     * @param number номер карты для блокировки
+     */
     @Operation(
             summary = "Заблокировать карту",
             description = "Немедленно блокирует банковскую карту (только для администраторов)",
@@ -94,6 +118,10 @@ public interface CardApi {
             @PathVariable("number") String number
     );
 
+    /**
+     * Активирует заблокированную банковскую карту.
+     * @param number номер карты для активации
+     */
     @Operation(
             summary = "Активировать карту",
             description = "Активирует заблокированную банковскую карту (только для администраторов)",
@@ -109,6 +137,10 @@ public interface CardApi {
             @PathVariable("number") String number
     );
 
+    /**
+     * Удаляет банковскую карту из системы.
+     * @param number номер карты для удаления
+     */
     @Operation(
             summary = "Удалить карту",
             description = "Удаляет банковскую карту из системы (только для администраторов)",
@@ -124,6 +156,11 @@ public interface CardApi {
             @PathVariable("number") String number
     );
 
+    /**
+     * Возвращает текущий баланс банковской карты.
+     * @param number номер карты
+     * @return баланс карты
+     */
     @Operation(
             summary = "Получить баланс карты",
             description = "Возвращает текущий баланс банковской карты",
@@ -145,6 +182,10 @@ public interface CardApi {
 
     // block-requests
 
+    /**
+     * Создает запрос на блокировку карты от пользователя.
+     * @param number номер карты для запроса блокировки
+     */
     @Operation(
             summary = "Создать запрос на блокировку",
             description = "Создает запрос на блокировку карты (только для пользователей)",
@@ -160,6 +201,12 @@ public interface CardApi {
             @PathVariable("number") String number
     );
 
+    /**
+     * Возвращает список всех запросов на блокировку карт.
+     * @param page номер страницы (начиная с 0)
+     * @param size размер страницы
+     * @return список запросов на блокировку
+     */
     @Operation(
             summary = "Получить все запросы на блокировку",
             description = "Возвращает список всех запросов на блокировку карт",
@@ -182,6 +229,13 @@ public interface CardApi {
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
     );
 
+    /**
+     * Возвращает список запросов на блокировку по указанному статусу.
+     * @param status статус запроса (PENDING, APPROVED, REJECTED)
+     * @param page номер страницы (начиная с 0)
+     * @param size размер страницы
+     * @return список запросов по статусу
+     */
     @Operation(
             summary = "Получить запросы по статусу",
             description = "Возвращает список запросов на блокировку по указанному статусу",
@@ -207,6 +261,10 @@ public interface CardApi {
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE) Integer size
     );
 
+    /**
+     * Одобряет запрос на блокировку карты.
+     * @param requestId идентификатор запроса на блокировку
+     */
     @Operation(
             summary = "Одобрить запрос на блокировку",
             description = "Одобряет запрос на блокировку карты (только для администраторов)",
@@ -222,6 +280,10 @@ public interface CardApi {
             @PathVariable UUID requestId
     );
 
+    /**
+     * Отклоняет запрос на блокировку карты.
+     * @param requestId идентификатор запроса на блокировку
+     */
     @Operation(
             summary = "Отклонить запрос на блокировку",
             description = "Отклоняет запрос на блокировку карты (только для администраторов)",

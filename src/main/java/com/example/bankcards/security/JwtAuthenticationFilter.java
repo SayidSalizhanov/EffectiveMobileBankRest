@@ -17,6 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Фильтр аутентификации JWT: извлекает токен из заголовка и аутентифицирует пользователя.
+ */
 @Component
 @Profile("!test")
 @RequiredArgsConstructor
@@ -25,6 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Обрабатывает запрос, проверяя JWT в заголовке Authorization.
+     * @param request тело запроса
+     * @param response тело ответа
+     * @param filterChain цепочка фильтров
+     * @throws ServletException ошибка сервлета
+     * @throws IOException ошибка ввода/вывода данных
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

@@ -11,8 +11,23 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Репозиторий пользователей.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+    /**
+     * Проверяет существование пользователя по логину.
+     * @param login логин
+     * @return логический тип (true/false)
+     */
     boolean existsByLogin(String login);
+
+    /**
+     * Находит пользователя по логину.
+     * @param login логин
+     * @return optional пользователя
+     */
     Optional<User> findByLogin(String login);
 } 

@@ -14,10 +14,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+/**
+ * REST API для операций аутентификации пользователей.
+ * <p>
+ * Содержит эндпоинты для входа пользователя и получения JWT токена.
+ */
 @Tag(name = "Аутентификация", description = "Управление аутентификацией пользователей")
 @RequestMapping("/api/auth")
 public interface AuthApi {
 
+    /**
+     * Выполняет аутентификацию пользователя по переданным учетным данным.
+     * При успешной аутентификации возвращает JWT токен для доступа к защищенным ресурсам.
+     * @param request запрос с логином и паролем
+     * @return ответ с JWT токеном и служебной информацией
+     */
     @Operation(
             summary = "Аутентификация пользователя",
             description = "Выполняет вход пользователя в систему и возвращает JWT токен",

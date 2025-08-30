@@ -9,6 +9,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис аутентификации пользователей: проверка учетных данных и выдача JWT.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -17,6 +20,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Аутентифицирует пользователя и возвращает JWT токен.
+     * @param request dto аутентификации (request)
+     * @return dto с токеном (response)
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

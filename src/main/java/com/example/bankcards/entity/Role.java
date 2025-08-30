@@ -9,6 +9,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Сущность роли безопасности, назначенную пользователям.
+ */
 @Entity
 @Table(name = "roles")
 @AllArgsConstructor

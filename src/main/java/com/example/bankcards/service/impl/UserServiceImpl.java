@@ -1,7 +1,7 @@
 package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.request.UserCreateRequest;
-import com.example.bankcards.dto.request.UserUpdateRequest;
+import com.example.bankcards.dto.request.UserPasswordUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация {@link com.example.bankcards.service.UserService}.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -33,7 +36,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    
+
+    /** {@inheritDoc} */
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getAll(Integer page, Integer size) {
@@ -43,7 +47,8 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     @Transactional(readOnly = true)
     public UserResponse getById(UUID userId) {
@@ -51,7 +56,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
         return userMapper.toResponse(user);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public UUID create(UserCreateRequest request) {
         if (userRepository.existsByLogin(request.login())) {
@@ -67,9 +73,10 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         return savedUser.getUserId();
     }
-    
+
+    /** {@inheritDoc} */
     @Override
-    public void update(UUID userId, UserUpdateRequest request) {
+    public void updatePassword(UUID userId, UserPasswordUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
@@ -79,7 +86,8 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public void delete(UUID userId) {
         if (!userRepository.existsById(userId)) {

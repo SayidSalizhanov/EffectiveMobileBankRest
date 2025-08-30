@@ -7,12 +7,17 @@ import com.example.bankcards.security.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Реализация {@link com.example.bankcards.controller.AuthApi}.
+ * Делегирует операции аутентификации сервису {@link com.example.bankcards.security.AuthenticationService}.
+ */
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController implements AuthApi {
 
     private final AuthenticationService authenticationService;
 
+    /** {@inheritDoc} */
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) {
         return authenticationService.authenticate(request);

@@ -6,6 +6,12 @@ import lombok.Builder;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Унифицированное тело ответа об ошибке для REST-эндпоинтов.
+ * @param message текст ошибки
+ * @param errors дутали ошибок по полям
+ * @param exceptionName имя класса исключения
+ */
 @Builder
 @Schema(description = "Сообщение об ошибке")
 public record ExceptionMessage(

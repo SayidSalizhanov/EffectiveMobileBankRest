@@ -6,6 +6,16 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Ответ с данными запроса на блокировку карты.
+ * @param requestId id запроса на блокировку
+ * @param cardNumber номер карты
+ * @param requesterLogin логин инициатора запроса
+ * @param status статус
+ * @param requestDate дата создания запроса
+ * @param processedDate дата обработки запроса
+ * @param reason причина блокировки
+ */
 @Builder
 @Schema(description = "Ответ с информацией о запросе на блокировку")
 public record BlockRequestResponse(
@@ -27,7 +37,7 @@ public record BlockRequestResponse(
         @Schema(description = "Дата обработки запроса", example = "2024-01-02T10:30:00")
         LocalDateTime processedDate,
 
-        @Schema(description = "Причина блокировки (если отклонено)", example = "Недостаточно оснований")
+        @Schema(description = "Причина блокировки", example = "Нет нужды в карте")
         String reason
 ) {
 }

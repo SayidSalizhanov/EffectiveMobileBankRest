@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Запрос на обновление пароля пользователя.
+ * @param oldPassword старый пароль
+ * @param newPassword новый пароль
  */
 @Schema(description = "Запрос на обновление пароля пользователя")
-public record UserUpdateRequest(
+public record UserPasswordUpdateRequest(
         @Schema(description = "Текущий пароль", example = "oldPassword123")
         @NotBlank(message = "Old password is required")
         String oldPassword,

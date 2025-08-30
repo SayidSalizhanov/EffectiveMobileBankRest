@@ -1,6 +1,6 @@
 package com.example.bankcards.entity;
 
-import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.enums.BlockRequestStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Сущность запроса пользователя на блокировку определенной карты.
+ * Отслеживает автора запроса, статус, временные метки и сообщение о причине.
+ */
 @Entity
 @Table(name = "block_requests")
 @AllArgsConstructor
@@ -34,7 +38,7 @@ public class BlockRequest {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BlockRequestStatus status;
+    private BlockRequestStatusEnum status;
     
     @Column(name = "request_date", nullable = false)
     private LocalDateTime requestDate;

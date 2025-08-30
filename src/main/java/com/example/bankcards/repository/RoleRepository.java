@@ -8,7 +8,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Репозиторий ролей.
+ */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {
+
+    /**
+     * Поиск роли по названию.
+     * @param name название
+     * @return optional роли
+     */
     Optional<Role> findByName(RoleNameEnum name);
 }

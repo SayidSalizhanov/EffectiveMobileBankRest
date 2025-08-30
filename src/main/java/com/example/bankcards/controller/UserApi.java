@@ -1,7 +1,7 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.request.UserCreateRequest;
-import com.example.bankcards.dto.request.UserUpdateRequest;
+import com.example.bankcards.dto.request.UserPasswordUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +21,9 @@ import java.util.UUID;
 import static com.example.bankcards.util.ValidationValues.Page.LIMIT_DEFAULT_VALUE;
 import static com.example.bankcards.util.ValidationValues.Page.OFFSET_DEFAULT_VALUE;
 
+/**
+ * REST API для управления пользователями системы (доступно только администраторам).
+ */
 @Tag(name = "Управление пользователями", description = "Операции с пользователями системы (только для администраторов)")
 @RequestMapping("/api/users")
 public interface UserApi {
@@ -39,6 +42,13 @@ public interface UserApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Возвращает список всех пользователей системы с пагинацией.
+     *
+     * @param page номер страницы (начиная с 0)
+     * @param size размер страницы
+     * @return список пользователей
+     */
     List<UserResponse> getUsers(
             @Parameter(description = "Номер страницы", example = "0")
             @RequestParam(defaultValue = OFFSET_DEFAULT_VALUE) Integer page,
@@ -60,6 +70,12 @@ public interface UserApi {
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Возвращает детальную информацию о пользователе по его идентификатору.
+     *
+     * @param userId идентификатор пользователя
+     * @return данные пользователя
+     */
     UserResponse getUserById(
             @Parameter(description = "ID пользователя", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
             @PathVariable("userId") UUID userId
@@ -78,6 +94,12 @@ public interface UserApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Регистрирует нового пользователя в системе.
+     *
+     * @param request данные для создания пользователя
+     * @return идентификатор созданного пользователя
+     */
     UUID create(@Valid @RequestBody UserCreateRequest request);
 
     @Operation(
@@ -90,10 +112,16 @@ public interface UserApi {
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Обновляет данные пользователя (в основном пароль).
+     *
+     * @param userId идентификатор пользователя
+     * @param request данные для обновления
+     */
     void update(
             @Parameter(description = "ID пользователя", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
             @PathVariable("userId") UUID userId,
-            @Valid @RequestBody UserUpdateRequest request
+            @Valid @RequestBody UserPasswordUpdateRequest request
     );
 
     @Operation(
@@ -106,6 +134,11 @@ public interface UserApi {
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')")
+    /**
+     * Удаляет пользователя из системы.
+     *
+     * @param userId идентификатор пользователя для удаления
+     */
     void delete(
             @Parameter(description = "ID пользователя", example = "d3d94468-2d6a-4d2a-9f38-0a9d27f8c1b3")
             @PathVariable("userId") UUID userId

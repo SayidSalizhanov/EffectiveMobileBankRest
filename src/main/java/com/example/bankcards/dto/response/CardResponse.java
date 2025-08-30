@@ -7,6 +7,14 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.UUID;
 
+/**
+ * Ответ с данными карты: номер, дата недействительности, статус, баланс, id владельца
+ * @param number номер
+ * @param expirationDate дата недействительности
+ * @param status статус
+ * @param balance баланс
+ * @param ownerId id владельца
+ */
 @Builder
 @Schema(description = "Ответ с информацией о карте")
 public record CardResponse(

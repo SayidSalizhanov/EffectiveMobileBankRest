@@ -5,6 +5,11 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 
+/**
+ * Ответ с информацией о балансе банковской карты.
+ * @param cardNumber номер карты
+ * @param balance баланс
+ */
 @Builder
 @Schema(description = "Ответ с балансом карты")
 public record BalanceResponse(

@@ -9,6 +9,12 @@ import jakarta.validation.constraints.Pattern;
 import java.time.YearMonth;
 import java.util.UUID;
 
+/**
+ * Запрос на создание новой банковской карты.
+ * @param number номер карты
+ * @param expirationDate дата недействительности
+ * @param ownerId id владельца
+ */
 @Schema(description = "Запрос на создание банковской карты")
 public record CardCreateRequest(
         @Schema(description = "Номер карты (16 цифр)", example = "1234567812345678", pattern = "\\d{16}")

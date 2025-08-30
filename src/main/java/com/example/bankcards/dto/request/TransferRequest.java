@@ -5,6 +5,12 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
+/**
+ * Запрос на перевод средств между картами одного пользователя.
+ * @param numberFrom номер карты отправителя
+ * @param numberTo номер карты получателя
+ * @param amount количество
+ */
 @Schema(description = "Запрос на перевод средств")
 public record TransferRequest(
         @Schema(description = "Номер карты отправителя", example = "1234567812345678", pattern = "\\d{16}")

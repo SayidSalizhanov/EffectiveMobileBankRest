@@ -9,6 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Сущность пользователя приложения, реализующая UserDetails.
+ * Содержит учетные данные, роли и связи с картами и запросами на блокировку.
+ */
 @Entity
 @Table(name = "users")
 @AllArgsConstructor
