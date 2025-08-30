@@ -51,3 +51,7 @@ card:
   expired:
     scheduler:
       enabled: false
+
+aspect:
+  service:
+    logging: false
