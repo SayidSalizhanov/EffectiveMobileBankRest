@@ -2,7 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.controller.impl.UserController;
 import com.example.bankcards.dto.request.UserCreateRequest;
-import com.example.bankcards.dto.request.UserUpdateRequest;
+import com.example.bankcards.dto.request.UserPasswordUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.exception.custom.UserAlreadyExistsException;
 import com.example.bankcards.exception.custom.UserNotFoundException;
@@ -137,8 +137,8 @@ class UserControllerTest {
     void updateUser_ShouldUpdateUser() throws Exception {
         // given
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest request = new UserUpdateRequest("oldpassword", "newpassword123");
-        willDoNothing().given(userService).update(eq(userId), eq(request));
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest("oldpassword", "newpassword123");
+        willDoNothing().given(userService).updatePassword(eq(userId), eq(request));
 
         // when & then
         mockMvc.perform(put("/api/users/{userId}", userId)
@@ -151,8 +151,8 @@ class UserControllerTest {
     void updateUser_ShouldReturnNotFound_WhenUserDoesNotExist() throws Exception {
         // given
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest request = new UserUpdateRequest("oldpassword", "newpassword123");
-        willThrow(new UserNotFoundException("User not found")).given(userService).update(eq(userId), eq(request));
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest("oldpassword", "newpassword123");
+        willThrow(new UserNotFoundException("User not found")).given(userService).updatePassword(eq(userId), eq(request));
 
         // when & then
         mockMvc.perform(put("/api/users/{userId}", userId)
@@ -165,7 +165,7 @@ class UserControllerTest {
     void updateUser_ShouldReturnBadRequest_WhenInvalidInput() throws Exception {
         // given
         UUID userId = UUID.randomUUID();
-        UserUpdateRequest invalidRequest = new UserUpdateRequest("", "pass");
+        UserPasswordUpdateRequest invalidRequest = new UserPasswordUpdateRequest("", "pass");
 
         // when & then
         mockMvc.perform(put("/api/users/{userId}", userId)

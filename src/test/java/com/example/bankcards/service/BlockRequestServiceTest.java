@@ -3,7 +3,7 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.response.BlockRequestResponse;
 import com.example.bankcards.entity.BlockRequest;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.enums.BlockRequestStatusEnum;
 import com.example.bankcards.exception.custom.BlockRequestNotFoundException;
 import com.example.bankcards.mapper.BlockRequestMapper;
 import com.example.bankcards.repository.BlockRequestRepository;
@@ -60,7 +60,7 @@ class BlockRequestServiceTest {
                 .requestId(requestId)
                 .cardNumber(cardNumber)
                 .requester(user)
-                .status(BlockRequestStatus.PENDING)
+                .status(BlockRequestStatusEnum.PENDING)
                 .requestDate(LocalDateTime.now())
                 .reason("User requested card block")
                 .build();
@@ -68,7 +68,7 @@ class BlockRequestServiceTest {
                 .requestId(requestId)
                 .cardNumber(cardNumber)
                 .requesterLogin(user.getLogin())
-                .status(BlockRequestStatus.PENDING.name())
+                .status(BlockRequestStatusEnum.PENDING.name())
                 .requestDate(blockRequest.getRequestDate())
                 .processedDate(null)
                 .reason(blockRequest.getReason())
@@ -103,7 +103,7 @@ class BlockRequestServiceTest {
         int size = 10;
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<BlockRequest> blockRequestPage = new PageImpl<>(Collections.singletonList(blockRequest));
-        when(blockRequestRepository.findByStatusWithRequester(BlockRequestStatus.PENDING, pageRequest)).thenReturn(blockRequestPage);
+        when(blockRequestRepository.findByStatusWithRequester(BlockRequestStatusEnum.PENDING, pageRequest)).thenReturn(blockRequestPage);
         when(blockRequestMapper.toResponse(blockRequest)).thenReturn(blockRequestResponse);
 
         // when
@@ -112,7 +112,7 @@ class BlockRequestServiceTest {
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0)).isEqualTo(blockRequestResponse);
-        verify(blockRequestRepository).findByStatusWithRequester(BlockRequestStatus.PENDING, pageRequest);
+        verify(blockRequestRepository).findByStatusWithRequester(BlockRequestStatusEnum.PENDING, pageRequest);
         verify(blockRequestMapper).toResponse(blockRequest);
     }
 
@@ -126,7 +126,7 @@ class BlockRequestServiceTest {
         // when & then
         assertThatThrownBy(() -> blockRequestService.getByStatus(invalidStatus, page, size))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No enum constant " + BlockRequestStatus.class.getCanonicalName() + "." + invalidStatus.toUpperCase());
+                .hasMessage("No enum constant " + BlockRequestStatusEnum.class.getCanonicalName() + "." + invalidStatus.toUpperCase());
         verify(blockRequestRepository, never()).findByStatusWithRequester(any(), any());
         verify(blockRequestMapper, never()).toResponse(any());
     }
@@ -141,7 +141,7 @@ class BlockRequestServiceTest {
         blockRequestService.approve(requestId);
 
         // then
-        assertThat(blockRequest.getStatus()).isEqualTo(BlockRequestStatus.APPROVED);
+        assertThat(blockRequest.getStatus()).isEqualTo(BlockRequestStatusEnum.APPROVED);
         assertThat(blockRequest.getProcessedDate()).isNotNull();
         verify(blockRequestRepository).findById(requestId);
         verify(blockRequestRepository).save(blockRequest);
@@ -170,7 +170,7 @@ class BlockRequestServiceTest {
         blockRequestService.reject(requestId);
 
         // then
-        assertThat(blockRequest.getStatus()).isEqualTo(BlockRequestStatus.REJECTED);
+        assertThat(blockRequest.getStatus()).isEqualTo(BlockRequestStatusEnum.REJECTED);
         assertThat(blockRequest.getProcessedDate()).isNotNull();
         verify(blockRequestRepository).findById(requestId);
         verify(blockRequestRepository).save(blockRequest);

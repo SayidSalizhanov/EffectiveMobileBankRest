@@ -28,7 +28,7 @@
 
 # Логика DTO request классов
 
-- **UserUpdateRequest**: DTO для обновления пароля пользователя:
+- **UserPasswordUpdateRequest**: DTO для обновления пароля пользователя:
     - `oldPassword`: старый пароль (обязателен).
     - `newPassword`: новый пароль (6–255 символов, обязателен).
 
@@ -155,7 +155,7 @@
     - `getAll`: Получение списка пользователей с пагинацией, преобразование в `UserResponse`.
     - `getById`: Получение пользователя по ID, возврат `UserResponse` или исключение `UserNotFoundException`.
     - `create`: Создание пользователя из `UserCreateRequest`, добавление роли `ROLE_USER`, проверка уникальности логина, возврат ID.
-    - `update`: Обновление пароля пользователя по `UserUpdateRequest`, проверка старого пароля, сохранение.
+    - `update`: Обновление пароля пользователя по `UserPasswordUpdateRequest`, проверка старого пароля, сохранение.
     - `delete`: Удаление пользователя по ID, проверка существования.
 
 - **TransferService** / **TransferServiceImpl**: Обработка переводов:

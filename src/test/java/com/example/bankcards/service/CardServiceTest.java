@@ -6,7 +6,7 @@ import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.entity.BlockRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.enums.BlockRequestStatus;
+import com.example.bankcards.enums.BlockRequestStatusEnum;
 import com.example.bankcards.enums.CardStatusEnum;
 import com.example.bankcards.exception.custom.CardNotFoundException;
 import com.example.bankcards.exception.custom.UserNotFoundException;
@@ -276,7 +276,7 @@ class CardServiceTest {
         BlockRequest blockRequest = BlockRequest.builder()
                 .cardNumber(cardNumber)
                 .requester(user)
-                .status(BlockRequestStatus.PENDING)
+                .status(BlockRequestStatusEnum.PENDING)
                 .requestDate(LocalDateTime.now())
                 .reason("User requested card block")
                 .build();

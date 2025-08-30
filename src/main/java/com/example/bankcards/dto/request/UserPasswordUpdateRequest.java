@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Запрос на обновление пароля пользователя.
+ */
 @Schema(description = "Запрос на обновление пароля пользователя")
 public record UserUpdateRequest(
         @Schema(description = "Текущий пароль", example = "oldPassword123")

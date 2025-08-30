@@ -1,7 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.request.UserCreateRequest;
-import com.example.bankcards.dto.request.UserUpdateRequest;
+import com.example.bankcards.dto.request.UserPasswordUpdateRequest;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
@@ -185,7 +185,7 @@ class UserServiceTest {
         String newPassword = "newPassword";
         String encodedOldPassword = "encodedOldPassword";
 
-        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest(oldPassword, newPassword);
         user.setPasswordHash(encodedOldPassword);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -193,7 +193,7 @@ class UserServiceTest {
         when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
 
         // when
-        userService.update(userId, request);
+        userService.updatePassword(userId, request);
 
         // then
         verify(userRepository).findById(userId);
@@ -203,11 +203,11 @@ class UserServiceTest {
     @Test
     void update_ShouldThrowException_WhenUserDoesNotExist() {
         // given
-        UserUpdateRequest request = new UserUpdateRequest("oldPassword", "newPassword");
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest("oldPassword", "newPassword");
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> userService.update(userId, request))
+        assertThatThrownBy(() -> userService.updatePassword(userId, request))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found with id: " + userId);
         verify(userRepository).findById(userId);
@@ -222,7 +222,7 @@ class UserServiceTest {
         String encodedOldPassword = "encodedOldPassword";
         String encodedNewPassword = "encodedNewPassword";
 
-        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest(oldPassword, newPassword);
         user.setPasswordHash(encodedOldPassword);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -230,7 +230,7 @@ class UserServiceTest {
         when(passwordEncoder.encode(newPassword)).thenReturn(encodedNewPassword);
 
         // when
-        userService.update(userId, request);
+        userService.updatePassword(userId, request);
 
         // then
         assertThat(user.getPasswordHash()).isEqualTo(encodedNewPassword);
@@ -246,14 +246,14 @@ class UserServiceTest {
         String encodedOldPassword = "encodedOldPassword";
         String encodedWrongPassword = "encodedWrongPassword";
 
-        UserUpdateRequest request = new UserUpdateRequest(oldPassword, newPassword);
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest(oldPassword, newPassword);
         user.setPasswordHash(encodedOldPassword);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(oldPassword)).thenReturn(encodedWrongPassword);
 
         // when
-        userService.update(userId, request);
+        userService.updatePassword(userId, request);
 
         // then
         assertThat(user.getPasswordHash()).isEqualTo(encodedOldPassword); // Пароль не изменился
